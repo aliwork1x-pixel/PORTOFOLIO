@@ -1,0 +1,7 @@
+{
+  "name": "Ali Graphic Design Portfolio",
+  "description": "A luxury, gold-themed graphic designer portfolio featuring smooth animations, a project grid, and a live content management interface.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
