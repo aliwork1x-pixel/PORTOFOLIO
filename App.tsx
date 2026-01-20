@@ -15,6 +15,32 @@ import Auth from './components/Auth';
 
 const ADMIN_EMAIL = 'aly575490@gmail.com';
 
+const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-100px" },
+  transition: { duration: 0.8, ease: "easeOut" }
+};
+
+const staggerContainer = {
+  initial: {},
+  whileInView: { transition: { staggerChildren: 0.15 } },
+  viewport: { once: true, margin: "-100px" }
+};
+
+const LazySectionImage: React.FC<{ src: string; alt: string; className?: string }> = ({ src, alt, className }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  return (
+    <img 
+      src={src} 
+      alt={alt}
+      loading="lazy"
+      onLoad={() => setIsLoaded(true)}
+      className={`${className} transition-opacity duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`} 
+    />
+  );
+};
+
 const App: React.FC = () => {
   const [content, setContent] = useState<WebsiteContent>(() => {
     const saved = localStorage.getItem('aura_portfolio_content_v4');
@@ -135,21 +161,34 @@ const App: React.FC = () => {
                   {/* Experience Section */}
                   <section className="py-24 border-t border-zinc-900 bg-black">
                     <div className="max-w-7xl mx-auto px-6">
-                      <div className="flex items-center gap-4 mb-20">
+                      <motion.div 
+                        {...fadeInUp}
+                        className="flex items-center gap-4 mb-20"
+                      >
                         <span className="text-[#C1FF00] font-bold text-lg">/EX</span>
                         <h2 className="text-4xl md:text-6xl font-display font-bold uppercase tracking-tighter">Career_Log</h2>
-                      </div>
-                      <div className="space-y-12">
+                      </motion.div>
+                      <motion.div 
+                        variants={staggerContainer}
+                        initial="initial"
+                        whileInView="whileInView"
+                        viewport={{ once: true, margin: "-100px" }}
+                        className="space-y-12"
+                      >
                         {content.experiences.map((exp, i) => (
-                          <div key={exp.id} className="grid md:grid-cols-[1fr_2fr] gap-8 border-b border-zinc-900 pb-12">
+                          <motion.div 
+                            key={exp.id} 
+                            variants={fadeInUp}
+                            className="grid md:grid-cols-[1fr_2fr] gap-8 border-b border-zinc-900 pb-12"
+                          >
                             <p className="text-[#C1FF00] font-black uppercase tracking-widest text-xs">{exp.date}</p>
                             <div>
                               <h3 className="text-2xl font-display font-black text-white mb-2">{exp.title} // {exp.company}</h3>
                               <p className="text-zinc-500 max-w-2xl">{exp.description}</p>
                             </div>
-                          </div>
+                          </motion.div>
                         ))}
-                      </div>
+                      </motion.div>
                     </div>
                   </section>
 
@@ -167,21 +206,38 @@ const App: React.FC = () => {
                   {content.certificates.some(c => !c.hidden) && (
                     <section className="py-24 border-t border-zinc-900">
                       <div className="max-w-7xl mx-auto px-6">
-                        <div className="flex items-center gap-4 mb-20">
+                        <motion.div 
+                          {...fadeInUp}
+                          className="flex items-center gap-4 mb-20"
+                        >
                           <span className="text-[#C1FF00] font-bold text-lg">/CT</span>
                           <h2 className="text-4xl md:text-6xl font-display font-bold uppercase tracking-tighter italic">Accreditation</h2>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        </motion.div>
+                        <motion.div 
+                          variants={staggerContainer}
+                          initial="initial"
+                          whileInView="whileInView"
+                          viewport={{ once: true, margin: "-100px" }}
+                          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                        >
                           {content.certificates.filter(c => !c.hidden).map(cert => (
-                            <div key={cert.id} className="group border border-zinc-900 p-6 hover:border-[#C1FF00]/40 transition-colors">
+                            <motion.div 
+                              key={cert.id} 
+                              variants={fadeInUp}
+                              className="group border border-zinc-900 p-6 hover:border-[#C1FF00]/40 transition-colors"
+                            >
                               <div className="aspect-[4/3] bg-zinc-900 mb-6 overflow-hidden">
-                                <img src={cert.imageUrl} className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" alt={cert.title} />
+                                <LazySectionImage 
+                                  src={cert.imageUrl} 
+                                  alt={cert.title} 
+                                  className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 duration-700" 
+                                />
                               </div>
                               <h4 className="text-white font-black uppercase text-xs tracking-widest mb-1">{cert.title}</h4>
                               <p className="text-zinc-600 text-[10px] uppercase font-bold">{cert.date}</p>
-                            </div>
+                            </motion.div>
                           ))}
-                        </div>
+                        </motion.div>
                       </div>
                     </section>
                   )}
@@ -193,31 +249,57 @@ const App: React.FC = () => {
                   {/* Testimonials Section */}
                   <section className="py-24 bg-[#050505] border-y border-zinc-900">
                     <div className="max-w-7xl mx-auto px-6">
-                      <div className="grid md:grid-cols-2 gap-20">
+                      <motion.div 
+                        variants={staggerContainer}
+                        initial="initial"
+                        whileInView="whileInView"
+                        viewport={{ once: true, margin: "-100px" }}
+                        className="grid md:grid-cols-2 gap-20"
+                      >
                         {content.testimonials.filter(t => !t.hidden).map(t => (
-                          <div key={t.id} className="relative p-10 border border-zinc-900 bg-black group overflow-hidden">
+                          <motion.div 
+                            key={t.id} 
+                            variants={fadeInUp}
+                            className="relative p-10 border border-zinc-900 bg-black group overflow-hidden"
+                          >
                             <div className="absolute top-0 right-0 w-2 h-2 bg-[#C1FF00] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <p className="text-zinc-400 text-lg italic leading-relaxed mb-8">"{t.content}"</p>
                             <div className="flex items-center gap-4">
                               <div className="w-12 h-12 rounded-full overflow-hidden grayscale">
-                                <img src={t.clientImage} alt={t.clientName} />
+                                <LazySectionImage 
+                                  src={t.clientImage} 
+                                  alt={t.clientName} 
+                                  className="w-full h-full object-cover" 
+                                />
                               </div>
                               <p className="text-white font-black uppercase tracking-widest text-[10px]">{t.clientName}</p>
                             </div>
-                          </div>
+                          </motion.div>
                         ))}
-                      </div>
+                      </motion.div>
                     </div>
                   </section>
 
                   {/* Client Logos Section */}
                   <section className="py-20 border-b border-zinc-900">
                     <div className="max-w-7xl mx-auto px-6">
-                      <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-30 grayscale hover:opacity-80 transition-opacity duration-500">
+                      <motion.div 
+                        variants={staggerContainer}
+                        initial="initial"
+                        whileInView="whileInView"
+                        viewport={{ once: true, margin: "-100px" }}
+                        className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-30 grayscale hover:opacity-80 transition-opacity duration-500"
+                      >
                         {content.clients.filter(c => !c.hidden).map(client => (
-                          <img key={client.id} src={client.logoUrl} className="h-8 md:h-12 w-auto object-contain" alt="Partner Logo" />
+                          <motion.div key={client.id} variants={fadeInUp}>
+                            <LazySectionImage 
+                              src={client.logoUrl} 
+                              className="h-8 md:h-12 w-auto object-contain" 
+                              alt="Partner Logo" 
+                            />
+                          </motion.div>
                         ))}
-                      </div>
+                      </motion.div>
                     </div>
                   </section>
 

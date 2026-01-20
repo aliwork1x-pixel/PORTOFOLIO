@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { User } from '../types';
+import { ADMIN_EMAIL } from '../constants';
 
 interface NavbarProps {
   currentUser: User | null;
@@ -12,7 +13,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ currentUser, onLogout, onAuthView, onAdminToggle }) => {
   const [scrolled, setScrolled] = useState(false);
-  const isAdmin = currentUser?.email === 'aly575490@gmail.com';
+  const isAdmin = currentUser?.email === ADMIN_EMAIL;
 
   useEffect(() => {
     const handleScroll = () => {

@@ -1,6 +1,8 @@
 
 import { WebsiteContent } from './types';
 
+export const ADMIN_EMAIL = 'aly575490@gmail.com';
+
 export const INITIAL_CONTENT: WebsiteContent = {
   heroTitle: "ALEX RIVERA",
   heroTagline: "Breaking the boundaries of digital aesthetics through high-contrast motion and experimental layout design.",

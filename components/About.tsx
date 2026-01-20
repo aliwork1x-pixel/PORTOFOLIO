@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface AboutProps {
@@ -9,6 +9,8 @@ interface AboutProps {
 }
 
 const About: React.FC<AboutProps> = ({ text, skills, image }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
   return (
     <section id="about" className="py-24 md:py-40 border-t border-zinc-900">
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-20 items-center">
@@ -46,7 +48,9 @@ const About: React.FC<AboutProps> = ({ text, skills, image }) => {
              <img 
                src={image} 
                alt="Process Visual" 
-               className="w-full h-full object-cover grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
+               loading="lazy"
+               onLoad={() => setIsLoaded(true)}
+               className={`w-full h-full object-cover grayscale transition-all duration-700 ${isLoaded ? 'opacity-50 hover:opacity-100' : 'opacity-0'}`}
              />
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#C1FF00]">
                 <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="opacity-20"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>

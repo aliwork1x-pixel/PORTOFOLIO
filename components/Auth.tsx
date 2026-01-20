@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { User } from '../types';
+import { ADMIN_EMAIL } from '../constants';
 
 interface AuthProps {
   mode: 'login' | 'signup';
@@ -45,7 +46,7 @@ const Auth: React.FC<AuthProps> = ({ mode, onSuccess, onSwitch, onCancel }) => {
           ...formData,
           email: normalizedEmail,
           id: Date.now().toString(), 
-          role: normalizedEmail === 'aly575490@gmail.com' ? 'admin' : 'user' 
+          role: normalizedEmail === ADMIN_EMAIL ? 'admin' : 'user' 
         };
         
         users.push(newUser);
@@ -59,114 +60,133 @@ const Auth: React.FC<AuthProps> = ({ mode, onSuccess, onSwitch, onCancel }) => {
           // Check if email exists at all to provide better hint
           const emailExists = users.some((u: User) => u.email === normalizedEmail);
           if (!emailExists) {
-            setError('ACCESS_DENIED: Email not found. Please "Request Access" (Sign Up) first.');
+            if (normalizedEmail === ADMIN_EMAIL) {
+              setError(`ACCESS_DENIED: The Admin account [${ADMIN_EMAIL}] has not been created on this device yet. Please click "Request Identity" below to initialize your profile.`);
+            } else {
+              setError('IDENT_NOT_FOUND: User does not exist in the database.');
+            }
           } else {
-            setError('AUTH_FAILURE: Incorrect security pin for this identity.');
+            setError('CREDENTIAL_MISMATCH: Invalid password for this identity.');
           }
           setIsSubmitting(false);
         }
       }
-    }, 800);
+    }, 1000);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-black grid-bg relative">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black">
+      <div className="absolute inset-0 bg-grid opacity-20 pointer-events-none" />
+      
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "circOut" }}
-        className="w-full max-w-md bg-zinc-950 border border-zinc-800 p-10 relative z-10"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="relative w-full max-w-md bg-zinc-950 border border-zinc-900 p-8 md:p-12 shadow-2xl"
       >
-        <div className="absolute -top-3 -left-3 w-6 h-6 bg-[#C1FF00]"></div>
-        <div className="absolute -bottom-3 -right-3 w-6 h-6 border border-[#C1FF00]"></div>
-
-        <h2 className="text-4xl font-display font-black tracking-tighter mb-2 uppercase italic">
-          {mode === 'login' ? 'SECURE_LOGIN' : 'CREATE_NODE'}
-        </h2>
-        <p className="text-zinc-500 text-[10px] uppercase tracking-[0.3em] mb-8 font-bold">
-          {mode === 'login' ? 'ESTABLISHING HANDSHAKE...' : 'REGISTERING NEW OPERATOR...'}
-        </p>
+        <div className="flex justify-between items-start mb-10">
+          <div>
+            <h2 className="text-3xl font-display font-black text-white italic uppercase tracking-tighter">
+              {mode === 'login' ? 'Auth_Login' : 'Core_Register'}
+            </h2>
+            <p className="text-[#C1FF00] text-[8px] font-bold uppercase tracking-[0.3em] mt-1">
+              Encrypted Session Link
+            </p>
+          </div>
+          <button 
+            onClick={onCancel} 
+            className="text-zinc-700 hover:text-white transition-colors uppercase text-[10px] font-black"
+          >
+            [Cancel]
+          </button>
+        </div>
 
         {error && (
           <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-red-950/20 border border-red-500/50 p-3 mb-6"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 p-4 bg-red-950/20 border border-red-900/50 text-red-500 text-[10px] font-mono leading-relaxed"
           >
-            <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest">{error}</p>
+            {error}
           </motion.div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {mode === 'signup' && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="space-y-6"
-            >
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase text-zinc-600 font-bold tracking-widest">Full Name</label>
-                <input required className="w-full bg-zinc-900 border border-zinc-800 p-3 outline-none focus:border-[#C1FF00] text-sm text-white placeholder:text-zinc-700" 
-                  placeholder="OPERATOR NAME"
-                  value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} />
+            <>
+              <div className="space-y-2">
+                <label className="text-zinc-600 text-[8px] font-bold uppercase tracking-widest">Full Name</label>
+                <input
+                  required
+                  type="text"
+                  value={formData.fullName}
+                  onChange={e => setFormData({ ...formData, fullName: e.target.value })}
+                  className="w-full bg-black border border-zinc-900 p-4 text-white outline-none focus:border-[#C1FF00] transition-colors font-mono text-sm"
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase text-zinc-600 font-bold tracking-widest">Phone</label>
-                  <input required className="w-full bg-zinc-900 border border-zinc-800 p-3 outline-none focus:border-[#C1FF00] text-sm text-white placeholder:text-zinc-700" 
-                    placeholder="+20"
-                    value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                <div className="space-y-2">
+                  <label className="text-zinc-600 text-[8px] font-bold uppercase tracking-widest">Phone</label>
+                  <input
+                    required
+                    type="tel"
+                    value={formData.phone}
+                    onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full bg-black border border-zinc-900 p-4 text-white outline-none focus:border-[#C1FF00] transition-colors font-mono text-sm"
+                  />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase text-zinc-600 font-bold tracking-widest">Governorate</label>
-                  <input required className="w-full bg-zinc-900 border border-zinc-800 p-3 outline-none focus:border-[#C1FF00] text-sm text-white placeholder:text-zinc-700" 
-                    placeholder="LOCALE"
-                    value={formData.governorate} onChange={e => setFormData({...formData, governorate: e.target.value})} />
+                <div className="space-y-2">
+                  <label className="text-zinc-600 text-[8px] font-bold uppercase tracking-widest">Governorate</label>
+                  <input
+                    required
+                    type="text"
+                    value={formData.governorate}
+                    onChange={e => setFormData({ ...formData, governorate: e.target.value })}
+                    className="w-full bg-black border border-zinc-900 p-4 text-white outline-none focus:border-[#C1FF00] transition-colors font-mono text-sm"
+                  />
                 </div>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase text-zinc-600 font-bold tracking-widest">WhatsApp Number</label>
-                <input required className="w-full bg-zinc-900 border border-zinc-800 p-3 outline-none focus:border-[#C1FF00] text-sm text-white placeholder:text-zinc-700" 
-                  placeholder="WP_SECURE"
-                  value={formData.whatsapp} onChange={e => setFormData({...formData, whatsapp: e.target.value})} />
-              </div>
-            </motion.div>
+            </>
           )}
 
-          <div className="space-y-1">
-            <label className="text-[10px] uppercase text-zinc-600 font-bold tracking-widest">Access Email</label>
-            <input required type="email" className="w-full bg-zinc-900 border border-zinc-800 p-3 outline-none focus:border-[#C1FF00] text-sm text-white placeholder:text-zinc-700" 
-              placeholder="operator@aura.labs"
-              value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+          <div className="space-y-2">
+            <label className="text-zinc-600 text-[8px] font-bold uppercase tracking-widest">Email Identity</label>
+            <input
+              required
+              type="email"
+              value={formData.email}
+              onChange={e => setFormData({ ...formData, email: e.target.value })}
+              className="w-full bg-black border border-zinc-900 p-4 text-white outline-none focus:border-[#C1FF00] transition-colors font-mono text-sm"
+            />
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] uppercase text-zinc-600 font-bold tracking-widest">Security Pin</label>
-            <input required type="password" placeholder="••••••••" className="w-full bg-zinc-900 border border-zinc-800 p-3 outline-none focus:border-[#C1FF00] text-sm text-white" 
-              value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+          <div className="space-y-2">
+            <label className="text-zinc-600 text-[8px] font-bold uppercase tracking-widest">Access Key</label>
+            <input
+              required
+              type="password"
+              value={formData.password}
+              onChange={e => setFormData({ ...formData, password: e.target.value })}
+              className="w-full bg-black border border-zinc-900 p-4 text-white outline-none focus:border-[#C1FF00] transition-colors font-mono text-sm"
+            />
           </div>
 
-          <button 
+          <button
             disabled={isSubmitting}
-            className={`w-full bg-[#C1FF00] text-black py-4 font-black uppercase text-xs tracking-[0.3em] transition-all mt-4 flex items-center justify-center gap-3 ${isSubmitting ? 'opacity-50 cursor-wait' : 'hover:neon-shadow-strong'}`}
+            type="submit"
+            className={`w-full py-5 font-black uppercase tracking-[0.4em] text-xs transition-all relative overflow-hidden group ${
+              isSubmitting ? 'bg-zinc-800 text-zinc-500' : 'bg-[#C1FF00] text-black hover:neon-shadow-strong'
+            }`}
           >
-            {isSubmitting ? (
-              <>
-                <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-                Processing...
-              </>
-            ) : (
-              mode === 'login' ? 'INITIALIZE_AUTH' : 'AUTHORIZE_NODE'
-            )}
+            {isSubmitting ? 'Scanning...' : mode === 'login' ? 'Initialize_Link' : 'Create_Identity'}
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-zinc-900 flex justify-between items-center">
-          <button onClick={onSwitch} className="text-[10px] uppercase text-zinc-500 hover:text-[#C1FF00] font-bold transition-colors">
-            {mode === 'login' ? 'Request Access' : 'Return to Login'}
-          </button>
-          <button onClick={onCancel} className="text-[10px] uppercase text-zinc-500 hover:text-white font-bold transition-colors">
-            Exit System
+        <div className="mt-10 pt-8 border-t border-zinc-900 text-center">
+          <button 
+            onClick={onSwitch}
+            className="text-zinc-500 hover:text-[#C1FF00] transition-colors text-[10px] font-bold uppercase tracking-widest"
+          >
+            {mode === 'login' ? 'No Access? Request Identity' : 'Existing Identity? Sign In'}
           </button>
         </div>
       </motion.div>
@@ -174,4 +194,5 @@ const Auth: React.FC<AuthProps> = ({ mode, onSuccess, onSwitch, onCancel }) => {
   );
 };
 
+// Fixed the missing default export
 export default Auth;

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface HeroProps {
@@ -10,6 +10,8 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ title, tagline, image, ctaText }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-24 overflow-hidden bg-black grid-bg">
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center z-10">
@@ -62,7 +64,9 @@ const Hero: React.FC<HeroProps> = ({ title, tagline, image, ctaText }) => {
             <img 
               src={image} 
               alt="Artboard" 
-              className="w-full h-full object-cover grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-1000 transform scale-110 hover:scale-100"
+              loading="lazy"
+              onLoad={() => setImageLoaded(true)}
+              className={`w-full h-full object-cover grayscale transition-all duration-1000 transform scale-110 hover:scale-100 ${imageLoaded ? 'opacity-80 hover:opacity-100' : 'opacity-0'}`}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
             

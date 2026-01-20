@@ -7,23 +7,42 @@ interface ServicesProps {
   services: Service[];
 }
 
+const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-100px" },
+  transition: { duration: 0.8, ease: "easeOut" }
+};
+
+const staggerContainer = {
+  initial: {},
+  whileInView: { transition: { staggerChildren: 0.2 } },
+  viewport: { once: true, margin: "-100px" }
+};
+
 const Services: React.FC<ServicesProps> = ({ services }) => {
   return (
     <section id="services" className="py-24 md:py-40 border-t border-zinc-900 bg-black">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center gap-4 mb-20">
+        <motion.div 
+          {...fadeInUp}
+          className="flex items-center gap-4 mb-20"
+        >
           <span className="text-[#C1FF00] font-bold text-lg">/03</span>
           <h2 className="text-4xl md:text-6xl font-display font-bold">Capabilities</h2>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3">
+        <motion.div 
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="whileInView"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 md:grid-cols-3"
+        >
           {services.map((service, index) => (
             <motion.div
               key={service.id}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
+              variants={fadeInUp}
               className={`p-12 border-zinc-800 transition-all duration-500 group relative
                 ${index === 0 ? 'md:border-r' : ''}
                 ${index === 1 ? 'md:border-r' : ''}
@@ -41,7 +60,7 @@ const Services: React.FC<ServicesProps> = ({ services }) => {
               <div className="mt-10 h-[1px] w-0 bg-[#C1FF00] group-hover:w-full transition-all duration-700"></div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

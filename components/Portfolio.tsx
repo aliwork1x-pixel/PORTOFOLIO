@@ -1,11 +1,50 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Project } from '../types';
 
 interface PortfolioProps {
   projects: Project[];
 }
+
+const ProjectCard: React.FC<{ project: Project; index: number }> = ({ project, index }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, delay: index * 0.1 }}
+      className="group"
+    >
+      <div className="relative aspect-[4/5] overflow-hidden mb-10 bg-zinc-900 border border-zinc-800 group-hover:border-[#C1FF00]/40 transition-colors duration-500">
+        {project.imageUrl && (
+          <img 
+            src={project.imageUrl} 
+            alt={project.title}
+            loading="lazy"
+            onLoad={() => setIsLoaded(true)}
+            className={`w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          />
+        )}
+        <div className="absolute inset-0 bg-[#C1FF00]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        
+        <div className="absolute bottom-10 left-10 overflow-hidden">
+           <p className="text-white font-display text-4xl font-bold translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+             {project.title}
+           </p>
+        </div>
+      </div>
+      <div className="flex justify-between items-center border-b border-zinc-900 pb-6 group-hover:border-[#C1FF00]/40 transition-colors">
+        <p className="text-[#C1FF00] uppercase tracking-[0.3em] text-[10px] font-bold">{project.category}</p>
+        <div className="text-right">
+          <p className="text-zinc-600 text-[10px] uppercase font-bold tracking-widest">{new Date(project.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 const Portfolio: React.FC<PortfolioProps> = ({ projects }) => {
   // Automatic Sorting: Newest First
@@ -33,37 +72,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ projects }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
           {sortedProjects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
-              className="group"
-            >
-              <div className="relative aspect-[4/5] overflow-hidden mb-10 bg-zinc-900 border border-zinc-800 group-hover:border-[#C1FF00]/40 transition-colors duration-500">
-                {project.imageUrl && (
-                  <img 
-                    src={project.imageUrl} 
-                    alt={project.title}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
-                  />
-                )}
-                <div className="absolute inset-0 bg-[#C1FF00]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                
-                <div className="absolute bottom-10 left-10 overflow-hidden">
-                   <p className="text-white font-display text-4xl font-bold translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                     {project.title}
-                   </p>
-                </div>
-              </div>
-              <div className="flex justify-between items-center border-b border-zinc-900 pb-6 group-hover:border-[#C1FF00]/40 transition-colors">
-                <p className="text-[#C1FF00] uppercase tracking-[0.3em] text-[10px] font-bold">{project.category}</p>
-                <div className="text-right">
-                  <p className="text-zinc-600 text-[10px] uppercase font-bold tracking-widest">{new Date(project.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}</p>
-                </div>
-              </div>
-            </motion.div>
+            <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
       </div>

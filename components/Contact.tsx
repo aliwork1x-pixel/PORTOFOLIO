@@ -6,6 +6,13 @@ interface ContactProps {
   email: string;
 }
 
+const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-100px" },
+  transition: { duration: 0.8, ease: "easeOut" }
+};
+
 const Contact: React.FC<ContactProps> = ({ email }) => {
   return (
     <section id="contact" className="py-24 md:py-40 bg-black overflow-hidden relative">
@@ -14,7 +21,7 @@ const Contact: React.FC<ContactProps> = ({ email }) => {
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="grid md:grid-cols-2 gap-20">
-          <div>
+          <motion.div {...fadeInUp}>
              <div className="flex items-center gap-4 mb-10">
                <span className="text-[#C1FF00] font-bold text-lg">/04</span>
                <h2 className="text-5xl md:text-8xl font-display font-bold leading-[0.9] tracking-tighter">
@@ -32,12 +39,13 @@ const Contact: React.FC<ContactProps> = ({ email }) => {
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
 
           <motion.form 
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, delay: 0.2 }}
             className="space-y-8 bg-zinc-900/40 p-12 backdrop-blur-sm border border-zinc-800/50"
           >
             <div className="space-y-10">
